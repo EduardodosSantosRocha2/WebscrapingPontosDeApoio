@@ -5,52 +5,12 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
+
 import time
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill
 
-
-service = Service()
-options = webdriver.ChromeOptions()
-driver = webdriver.Chrome(service=service, options=options)
-
-
-url = 'https://cvv.org.br/'
-driver.get(url)
-
-
-wait = WebDriverWait(driver, 10)
-
-
-botao_aceitartodos = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'aceitar-todos')))
-botao_aceitartodos.click()
-def busca(estado, cidade):
-    estado_select = wait.until(EC.presence_of_element_located((By.ID, 'estado')))
-    estado_dropdown = Select(estado_select)
-    estado_dropdown.select_by_value(estado)
-
-
-    cidade_select = wait.until(EC.presence_of_element_located((By.ID, 'cidade')))
-    cidade_dropdown = Select(cidade_select)
-    cidade_dropdown.select_by_value(cidade)
-
-
-    buscar_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[type="submit"]')))
-    buscar_button.click()
-
-
-    time.sleep(2) 
-
-
-
-
-    elementos_p = wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, 'p')))
-
-
-    elementos_p = elementos_p[34:38]
-    return elementos_p
-
-elementos_p = busca('MG', 'UBERLÂNDIA')
 
 orangeFill = PatternFill(start_color='FFC000',
                    end_color='FFC000',
@@ -94,16 +54,81 @@ sheet['D1'] = "CNPJ da mantenedora"
 sheet['D1'].fill = purpleFill
 
 
-
-for i, elementos in enumerate(elementos_p):
-    #  aux = elementos.text
-     aux  = elementos.text
-     aux  = aux.split(":")
-     print(f"{aux}")
-     sheet.cell(2,i+1).value=aux[1]
+service = Service()
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=service, options=options)
 
 
-wb.save("CVV.xlsx")
+url = 'https://cvv.org.br/'
+driver.get(url)
+
+
+wait = WebDriverWait(driver, 10)
+
+
+botao_aceitartodos = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'aceitar-todos')))
+botao_aceitartodos.click()
+
+def busca(estado, cidade):
+    estado_select = wait.until(EC.presence_of_element_located((By.ID, 'estado')))
+    estado_dropdown = Select(estado_select)
+    estado_dropdown.select_by_value(estado)
+
+    cidade_select = wait.until(EC.presence_of_element_located((By.ID, 'cidade')))
+    cidade_dropdown = Select(cidade_select)
+    cidade_dropdown.select_by_value(cidade)
+
+
+    buscar_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'input[type="submit"]')))
+    buscar_button.click()
+
+
+    time.sleep(2) 
+
+
+
+
+    elementos_p = wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, 'p')))
+
+
+    elementos_p = elementos_p[34:38]
+
+    return elementos_p
+
+
+
+def gerarPlanilha(elementosDicionario, nomePlanilha):
+    
+    for j, elementos in enumerate(elementosDicionario):
+        for i ,valores in enumerate(elementos):
+            aux  = valores
+            aux  = aux.split(":")
+            print(f"{aux}")
+            countLines = (pd.read_excel(f"{nomePlanilha}.xlsx", engine='openpyxl').shape[0]) + j + 2
+            sheet.cell(countLines,i+1).value=aux[1]
+    
+    wb.save("CVV.xlsx")
+
+
+
+
+
+def extrairTexto(elementosDicionario, estado, cidade):    
+    elementos_cidades = busca(estado, cidade)
+    elementos_text = [elemento.text for elemento in elementos_cidades]
+    print(f"Elementos Uberlândia: {elementos_text}")
+    elementosDicionario.append(elementos_text)
+
+
+
+elementosDicionario = []
+extrairTexto(elementosDicionario, 'MG', 'BELO HORIZONTE')
+extrairTexto(elementosDicionario, 'MG', 'IPATINGA')
+extrairTexto(elementosDicionario, 'MG', 'ITABIRA')
+extrairTexto(elementosDicionario, 'MG', 'MONTES CLAROS')
+extrairTexto(elementosDicionario, 'MG', 'UBERABA')
+extrairTexto(elementosDicionario, 'MG', 'UBERLÂNDIA')
+gerarPlanilha(elementosDicionario, "CVV")
      
 
 time.sleep(1)
