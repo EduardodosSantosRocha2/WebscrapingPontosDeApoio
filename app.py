@@ -7,42 +7,9 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
-
 import time
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill
-
-
-orangeFill = PatternFill(start_color='FFC000',end_color='FFC000',fill_type='solid')
-
-blueFill = PatternFill(start_color='00B0F0',end_color='00B0F0',fill_type='solid')
-
-greenFill = PatternFill(start_color='00c04b',end_color='00c04b',fill_type='solid')
-
-purpleFill = PatternFill(start_color='3139E4',end_color='3139E4',fill_type='solid')
-
-yeloyFill = PatternFill(start_color='f7d917',end_color='f7d917', fill_type='solid')
-
-
-
-wb = Workbook()
-
-del wb['Sheet']
-
-sheet = wb.create_sheet('Nome do Sheet')
-
-sheet.cell(1,1).value = "E-mail"
-sheet.cell(1,1).fill = orangeFill
-
-sheet['B1'] = "Endereço"
-sheet['B1'].fill = blueFill
-
-sheet['C1'] = "Mantenedora"
-sheet['C1'].fill = greenFill
-
-
-sheet['D1'] = "CNPJ da mantenedora"
-sheet['D1'].fill = purpleFill
 
 
 service = Service()
@@ -89,6 +56,41 @@ def busca(estado, cidade):
 
 
 def gerarPlanilha(elementosDicionario, nomePlanilha):
+
+    orangeFill = PatternFill(start_color='FFC000',end_color='FFC000',fill_type='solid')
+
+    blueFill = PatternFill(start_color='00B0F0',end_color='00B0F0',fill_type='solid')
+
+    greenFill = PatternFill(start_color='00c04b',end_color='00c04b',fill_type='solid')
+
+    purpleFill = PatternFill(start_color='3139E4',end_color='3139E4',fill_type='solid')
+
+    yeloyFill = PatternFill(start_color='f7d917',end_color='f7d917', fill_type='solid')
+
+
+
+    wb = Workbook()
+
+    del wb['Sheet']
+
+    sheet = wb.create_sheet('Nome do Sheet')
+
+    sheet['A1'] =  "E-mail"
+    sheet['A1'].fill = orangeFill
+
+    sheet['B1'] = "Endereço"
+    sheet['B1'].fill = blueFill
+
+    sheet['C1'] = "Mantenedora"
+    sheet['C1'].fill = greenFill
+
+
+    sheet['D1'] = "CNPJ da mantenedora"
+    sheet['D1'].fill = purpleFill
+
+
+
+    
     # Verifica se o arquivo já existe
     if os.path.exists(f"{nomePlanilha}.xlsx"):
         df = pd.read_excel(f"{nomePlanilha}.xlsx", engine='openpyxl')
