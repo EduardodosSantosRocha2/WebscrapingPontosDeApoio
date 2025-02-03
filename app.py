@@ -12,7 +12,7 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill
 
 
-service = Service()
+service = Service("chromedriver.exe")
 options = webdriver.ChromeOptions()
 driver = webdriver.Chrome(service=service, options=options)
 
@@ -49,7 +49,7 @@ def busca(estado, cidade):
     elementos_p = wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, 'p')))
 
 
-    elementos_p = elementos_p[34:38]
+    elementos_p = elementos_p[28:32]
 
     return elementos_p
 
